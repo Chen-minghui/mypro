@@ -1,0 +1,78 @@
+通信协议：
+
+//[]里面填写实际信息
+
+
+客户端：
+
+
+初始化一个好友列表，测试时可先自行添加，由服务器判断，后期可以让服务器回传当前小区注册的用户列表。
+
+
+注意：指令判断存在最好完全一致，防止存在子串现象出现判断错误！
+
+
+
+1）发送请求到服务器：
+			 1.write2usr:\r\nwrite=[%s]info=[%s]read=[%s]\r\n\r\n   ->发送该信息到服务器，让服务器去发送该信息到某个要求的客户端
+
+			 2.transfer_info_ready: [wirte_name] [info_size] [info_name] [read_name]\r\n\r\n   ->发送该信息到服务器，让服务器去获取文件大小和文件名字
+			
+			 3.GetInstantMsg\r\n\r\n   ->获取天气和新闻等实时信息！
+			
+		         4.GetNewsMsg\r\n\r\n       ->获取舔狗日志
+
+			 5.usr_msg:\r\n[name:%s]\n[house:%s]\r\n\r\n   ->发送个人信息到服务器
+
+			 6.Info_Send:\r\n\r\n  ->服务器已经接受到了文件大小和名字，准备发送文件！
+
+			 7.reject the info!\r\n\r\n   ->拒收文件！
+ 			 
+			 8.accept the info!\r\n\r\n   ->接受文件！
+				
+		         9. info accept success!\r\n\r\n  ->接受完毕！
+
+
+
+	
+2） 接受服务器的消息：
+			 1.read_msg:\r\n[write_usr]: %s\r\n\r\n   ->获取某个客户端的信息！
+
+		   	 2.Send2usr: write_name info_name info_size \r\n\r\n   ->响应服务器的请求
+
+			 3.loin\r\n\r\n   ->响应服务器的请求，将个人信息发送到服务器
+
+		         4.usr not exist or has outline\r\n\r\n    ->表示当前服务器上无此人或此人不在（下线）
+
+			 5. RecvInstantMsg\r\n\r\n     ->接受天气和新闻等实时信息！
+
+			 6.  SendNotice\r\n           ->接受公告！   
+
+			 7. RecvNewsMsg\r\n%s\r\n\r\n    ->接受日志  
+
+			 8. please2SendInfo\r\n\r\n   ->表示服务器收到了文件名和大小，客户端收到去发送文件
+
+
+https://tianqiapi.com/api?version=v6&appid=39134871&appsecret=ii67BlwB&广州   最新的API
+
+
+
+天气信息：
+
+{"cityid":"101280101","date":"2020-12-18","week":"\u661f\u671f\u4e94","update_time":"2020-12-18 09:10:19","city":"\u5e7f\u5dde","cityEn":"guangzhou","country":"\u4e2d\u56fd","countryEn":"China","wea":"\u591a\u4e91","wea_img":"yun","tem":"10","tem1":"13","tem2":"9","win":"\u4e1c\u5317\u98ce","win_speed":"2\u7ea7","win_meter":"\u5c0f\u4e8e12km\/h","humidity":"72%","visibility":"\u6682\u7f3a","pressure":"1021","air":"42","air_pm25":"42","air_level":"\u4f18","air_tips":"\u7a7a\u6c14\u5f88\u597d\uff0c\u53ef\u4ee5\u5916\u51fa\u6d3b\u52a8\uff0c\u547c\u5438\u65b0\u9c9c\u7a7a\u6c14\uff0c\u62e5\u62b1\u5927\u81ea\u7136\uff01","alarm":{"alarm_type":"","alarm_level":"","alarm_content":""}}
+
+
+舔狗日志：
+
+{
+    "code": 200,
+    "msg": "success",
+    "data": {
+        "content": "今天我问你，啥时候能主动找一下我，你说星期八，我的天啊 ，我异常的兴奋，等32号也没有关系，13月份也行，25点钟也是没有问题的，因为只要是你都可以的，毕竟有机会了嘛，开心，今天又是元气满满的一天！"
+    },
+    "author": {
+        "name": "Alone88",
+        "desc": "由Alone88提供的免费API 服务，官方文档：www.alapi.cn"
+    }
+}
+

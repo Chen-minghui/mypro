@@ -1,0 +1,70 @@
+1.该版本的客户端需要在GEC6818开发板下运行，依赖终端和服务端操作收发文件
+
+
+2.收发文件为测试版本，仅是在客户端自发自收下测试通过！
+
+测试例子：
+
+1）./client_ts cmh ae86 192.168.22.29 10086(服务器实际IP和端口)
+
+2）用户输入3进入文件收发界面！
+
+3）输入姓名  （cmh）
+
+4)输入文件的全路径！（注意：一定要是全路径！）
+
+重复以上步骤可多次收发
+
+
+3.文件收发相关自定义的通信协议
+
+
+
+1）发送请求到服务器：
+
+			 2.transfer_info_ready: [wirte_name] [info_size] [info_name] [read_name]\r\n\r\n   ->发送该信息到服务器，让服务器去获取文件大小和文件名字
+			
+			 6.Info_Send:\r\n\r\n  ->服务器已经接受到了文件大小和名字，准备发送文件！
+
+			 7.reject the info!\r\n\r\n   ->拒收文件！
+ 			 
+			 8.accept the info!\r\n\r\n   ->接受文件！
+				
+		         9. info accept success!\r\n\r\n  ->接受完毕！
+
+
+
+	
+2） 接受服务器的消息：
+
+		   	 2.Send2usr: write_name info_name info_size \r\n\r\n   ->响应服务器的请求
+
+			 8. please2SendInfo\r\n\r\n   ->表示服务器收到了文件名和大小，客户端收到去发送文件
+
+
+
+收发文件步骤简述：
+
+//服务器中创建了一个任务节点列表，负责存储每个任务的信息！ 同时服务器的文件系统中有一个目录暂存客户端的文件
+
+1）发送者发送transfer_info_ready: [wirte_name] [info_size] [info_name] [read_name]\r\n\r\n到服务器
+
+2）服务器收到后创建一个任务节点，该节点存放wirte_name、info_size、info_name、read_name等信息，之后回传一个please2SendInfo\r\n\r\n给到发送者
+
+3）发送者收到please2SendInfo\r\n\r\n后，开始传输文件的原始数据，先发送一个Info_Send:\r\n\r\n给到服务器，服务器开始接受文件！发送者之后发送文件原始数据
+
+4）服务器收到文件后，发送者与服务器之间的任务结束，服务器中的这一个任务暂存区flag=1。
+
+5）服务器中有一个线程负责扫描文件任务暂存区的flag，如果有任务就去执行！此时有任务，发送一个Send2usr: write_name info_name info_size \r\n\r\n给到客户端的接受者！
+
+6）接受者收到Send2usr: write_name info_name info_size \r\n\r\n后有权利拒收！拒收发送reject the info!\r\n\r\n到服务器，服务器宣布任务结束！
+
+7）若接受者同意接收任务，则接受者发送一个accept the info!\r\n\r\n   ->接受文件！到服务器，服务器收到accept the info!\r\n\r\n 后，子线程开始发送文件！
+
+8）拒收或接收完毕后均表示任务结束，任务节点得到删除！
+
+
+
+
+
+
